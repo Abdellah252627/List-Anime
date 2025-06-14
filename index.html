@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime List - قائمة الأنميات المفضلة</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tv"></i> Anime List - قائمة الأنميات المفضلة</h1>
+            <div class="header-buttons">
+                <button id="addAnimeBtn" class="add-btn">
+                    <i class="fas fa-plus"></i> إضافة أنمي جديد
+                </button>
+                <div class="backup-buttons">
+                    <button id="exportBtn" class="backup-btn export-btn" title="تصدير البيانات">
+                        <i class="fas fa-download"></i> تصدير
+                    </button>
+                    <button id="importBtn" class="backup-btn import-btn" title="استيراد البيانات">
+                        <i class="fas fa-upload"></i> استيراد
+                    </button>
+                    <button id="malImportBtn" class="backup-btn mal-btn" title="استيراد من MyAnimeList">
+                        <i class="fas fa-external-link-alt"></i> MAL
+                    </button>
+                    <input type="file" id="importFile" accept=".json,.xml" style="display: none;">
+                </div>
+                <a href="https://www.instagram.com/abde.llahweb/" target="_blank" class="social-link instagram-link" title="تابعني على الإنستغرام">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="admin.html" class="admin-link">
+                    <i class="fas fa-cogs"></i> لوحة الإدارة
+                </a>
+            </div>
+        </header>
+
+        <!-- نموذج إضافة أنمي جديد -->
+        <div id="addAnimeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>إضافة أنمي جديد</h2>
+                <form id="animeForm">
+                    <div class="form-group">
+                        <label for="animeName">اسم الأنمي:</label>
+                        <div class="anime-name-container">
+                            <input type="text" id="animeName" required placeholder="أدخل اسم الأنمي">
+                            <button type="button" id="browseAnimesBtn" class="browse-btn" title="تصفح الأنميات المحفوظة">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeImage">رابط الصورة:</label>
+                        <input type="url" id="animeImage" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalEpisodes">عدد الحلقات الكلي:</label>
+                        <input type="number" id="totalEpisodes" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="watchedEpisodes">عدد الحلقات المشاهدة:</label>
+                        <input type="number" id="watchedEpisodes" min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeStatus">الحالة:</label>
+                        <select id="animeStatus" required>
+                            <option value="watching">أشاهدها حالياً</option>
+                            <option value="plan-to-watch">سأكملها لاحقاً</option>
+                            <option value="completed">تمت مشاهدتها</option>
+                            <option value="ongoing">مستمرة</option>
+                            <option value="finished">مكتملة</option>
+                            <option value="not-aired">لم يتم بثه بعد</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeType">نوع الأنمي:</label>
+                        <select id="animeType">
+                            <option value="">اختر النوع</option>
+                            <option value="tv">مسلسل</option>
+                            <option value="movie">فلم</option>
+                            <option value="ona">ONA</option>
+                            <option value="ova">OVA</option>
+                            <option value="special">خاصة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeSeason">الموسم:</label>
+                        <select id="animeSeason">
+                            <option value="">اختر الفصل</option>
+                            <option value="spring">ربيع</option>
+                            <option value="summer">صيف</option>
+                            <option value="fall">خريف</option>
+                            <option value="winter">شتاء</option>
+                            <option value="spring-2024">ربيع 2024</option>
+                            <option value="summer-2024">صيف 2024</option>
+                            <option value="fall-2024">خريف 2024</option>
+                            <option value="winter-2024">شتاء 2024</option>
+                            <option value="spring-2023">ربيع 2023</option>
+                            <option value="summer-2023">صيف 2023</option>
+                            <option value="fall-2023">خريف 2023</option>
+                            <option value="winter-2023">شتاء 2023</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeRating">التقييم:</label>
+                        <div class="star-rating">
+                            <div class="stars" id="starRating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                                <i class="fas fa-star star" data-rating="6"></i>
+                                <i class="fas fa-star star" data-rating="7"></i>
+                                <i class="fas fa-star star" data-rating="8"></i>
+                                <i class="fas fa-star star" data-rating="9"></i>
+                                <i class="fas fa-star star" data-rating="10"></i>
+                            </div>
+                            <span class="rating-value" id="ratingValue">0/10</span>
+                        </div>
+                        <input type="hidden" id="animeRating" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeGenres">التصنيفات:</label>
+                        <div class="genres-container">
+                            <div class="genre-checkboxes" id="genreCheckboxes">
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="أكشن"> أكشن
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مغامرة"> مغامرة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="كوميدي"> كوميدي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="دراما"> دراما
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رومانسي"> رومانسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خيال علمي"> خيال علمي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="فانتازيا"> فانتازيا
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رعب"> رعب
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="غموض"> غموض
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رياضة"> رياضة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="موسيقي"> موسيقي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="تاريخي"> تاريخي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شونين"> شونين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شياطين"> شياطين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="سينين"> سينين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="جوسي"> جوسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شوجو"> شوجو
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ميكا"> ميكا
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شريحة من الحياة"> شريحة من الحياة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="إيسيكاي"> إيسيكاي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="عسكري"> عسكري
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مدرسي"> مدرسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="قوة خارقة"> قوة خارقة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مصاص الدماء"> مصاص الدماء
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="فنون قتالية"> فنون قتالية
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ساموراي"> ساموراي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="سيارات"> سيارات
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خيال"> خيال
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خارق للطبيعة"> خارق للطبيعة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ألعاب"> ألعاب
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="animeNotes">ملاحظات:</label>
+                        <textarea id="animeNotes" rows="3" placeholder="أضف ملاحظاتك حول هذا الأنمي..."></textarea>
+                    </div>
+                    
+                    <button type="submit">إضافة الأنمي</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- نموذج تعديل الأنمي -->
+        <div id="editAnimeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>تعديل الأنمي</h2>
+                <form id="editAnimeForm">
+                    <input type="hidden" id="editAnimeId">
+                    
+                    <div class="form-group">
+                        <label for="editAnimeName">اسم الأنمي:</label>
+                        <input type="text" id="editAnimeName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeImage">رابط الصورة:</label>
+                        <input type="url" id="editAnimeImage">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTotalEpisodes">عدد الحلقات الكلي:</label>
+                        <input type="number" id="editTotalEpisodes" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editWatchedEpisodes">عدد الحلقات المشاهدة:</label>
+                        <input type="number" id="editWatchedEpisodes" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeStatus">الحالة:</label>
+                        <select id="editAnimeStatus" required>
+                            <option value="watching">أشاهدها حالياً</option>
+                            <option value="plan-to-watch">سأكملها لاحقاً</option>
+                            <option value="completed">تمت مشاهدتها</option>
+                            <option value="ongoing">مستمرة</option>
+                            <option value="finished">مكتملة</option>
+                            <option value="not-aired">لم يتم بثه بعد</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeType">نوع الأنمي:</label>
+                        <select id="editAnimeType">
+                            <option value="">اختر النوع</option>
+                            <option value="tv">مسلسل</option>
+                            <option value="movie">فلم</option>
+                            <option value="ona">ONA</option>
+                            <option value="ova">OVA</option>
+                            <option value="special">خاصة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeSeason">الموسم:</label>
+                        <select id="editAnimeSeason">
+                            <option value="">اختر الفصل</option>
+                            <option value="spring">ربيع</option>
+                            <option value="summer">صيف</option>
+                            <option value="fall">خريف</option>
+                            <option value="winter">شتاء</option>
+                            <option value="spring-2024">ربيع 2024</option>
+                            <option value="summer-2024">صيف 2024</option>
+                            <option value="fall-2024">خريف 2024</option>
+                            <option value="winter-2024">شتاء 2024</option>
+                            <option value="spring-2023">ربيع 2023</option>
+                            <option value="summer-2023">صيف 2023</option>
+                            <option value="fall-2023">خريف 2023</option>
+                            <option value="winter-2023">شتاء 2023</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeRating">التقييم:</label>
+                        <div class="star-rating">
+                            <div class="stars" id="editStarRating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                                <i class="fas fa-star star" data-rating="6"></i>
+                                <i class="fas fa-star star" data-rating="7"></i>
+                                <i class="fas fa-star star" data-rating="8"></i>
+                                <i class="fas fa-star star" data-rating="9"></i>
+                                <i class="fas fa-star star" data-rating="10"></i>
+                            </div>
+                            <span class="rating-value" id="editRatingValue">0/10</span>
+                        </div>
+                        <input type="hidden" id="editAnimeRating" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeGenres">التصنيفات:</label>
+                        <div class="genres-container">
+                            <div class="genre-checkboxes" id="editGenreCheckboxes">
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="أكشن"> أكشن
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مغامرة"> مغامرة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="كوميدي"> كوميدي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="دراما"> دراما
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رومانسي"> رومانسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خيال علمي"> خيال علمي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="فانتازيا"> فانتازيا
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رعب"> رعب
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="غموض"> غموض
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="رياضة"> رياضة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="موسيقي"> موسيقي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="تاريخي"> تاريخي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شونين"> شونين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شياطين"> شياطين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="سينين"> سينين
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="جوسي"> جوسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شوجو"> شوجو
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ميكا"> ميكا
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="شريحة من الحياة"> شريحة من الحياة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="إيسيكاي"> إيسيكاي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="عسكري"> عسكري
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مدرسي"> مدرسي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="قوة خارقة"> قوة خارقة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="مصاص الدماء"> مصاص الدماء
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="فنون قتالية"> فنون قتالية
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ساموراي"> ساموراي
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="سيارات"> سيارات
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خيال"> خيال
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="خارق للطبيعة"> خارق للطبيعة
+                                </label>
+                                <label class="genre-checkbox">
+                                    <input type="checkbox" value="ألعاب"> ألعاب
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAnimeNotes">ملاحظات:</label>
+                        <textarea id="editAnimeNotes" rows="3" placeholder="أضف ملاحظاتك حول هذا الأنمي..."></textarea>
+                    </div>
+                    
+                    <button type="submit">حفظ التغييرات</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- إحصائيات -->
+        <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                    <h3 id="watchingCount">0</h3>
+                    <p>أشاهدها حالياً</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <h3 id="planToWatchCount">0</h3>
+                    <p>سأكملها لاحقاً</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <h3 id="completedCount">0</h3>
+                    <p>تمت مشاهدتها</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-sync-alt"></i>
+                <div>
+                    <h3 id="ongoingCount">0</h3>
+                    <p>مستمرة</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-flag-checkered"></i>
+                <div>
+                    <h3 id="finishedCount">0</h3>
+                    <p>مكتملة</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-times"></i>
+                <div>
+                    <h3 id="notAiredCount">0</h3>
+                    <p>لم يتم بثه بعد</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-list"></i>
+                <div>
+                    <h3 id="totalCount">0</h3>
+                    <p>المجموع الكلي</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- فلاتر -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">الكل</button>
+            <button class="filter-btn" data-filter="watching">أشاهدها حالياً</button>
+            <button class="filter-btn" data-filter="plan-to-watch">سأكملها لاحقاً</button>
+            <button class="filter-btn" data-filter="completed">تمت مشاهدتها</button>
+            <button class="filter-btn" data-filter="ongoing">مستمرة</button>
+            <button class="filter-btn" data-filter="finished">مكتملة</button>
+            <button class="filter-btn" data-filter="not-aired">لم يتم بثه بعد</button>
+        </div>
+
+        <!-- شريط البحث والترتيب -->
+        <div class="search-sort-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="ابحث عن أنمي...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="sort-controls">
+                <label for="sortSelect" class="sort-label">
+                    <i class="fas fa-sort"></i> ترتيب حسب:
+                </label>
+                <select id="sortSelect" class="sort-select">
+                    <option value="dateAdded-desc">تاريخ الإضافة (الأحدث أولاً)</option>
+                    <option value="dateAdded-asc">تاريخ الإضافة (الأقدم أولاً)</option>
+                    <option value="name-asc">الاسم (أ - ي)</option>
+                    <option value="name-desc">الاسم (ي - أ)</option>
+                    <option value="rating-desc">التقييم (الأعلى أولاً)</option>
+                    <option value="rating-asc">التقييم (الأقل أولاً)</option>
+                    <option value="progress-desc">التقدم (الأعلى أولاً)</option>
+                    <option value="progress-asc">التقدم (الأقل أولاً)</option>
+                    <option value="episodes-desc">عدد الحلقات (الأكثر أولاً)</option>
+                    <option value="episodes-asc">عدد الحلقات (الأقل أولاً)</option>
+                </select>
+                
+                <button id="sortOrderBtn" class="sort-order-btn" title="عكس الترتيب">
+                    <i class="fas fa-sort-amount-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- قائمة الأنميات -->
+        <div id="animeList" class="anime-grid">
+            <!-- سيتم إضافة الأنميات هنا بواسطة JavaScript -->
+        </div>
+
+        <!-- رسالة فارغة -->
+        <div id="emptyMessage" class="empty-message" style="display: none;">
+            <i class="fas fa-tv"></i>
+            <h3>لا توجد أنميات بعد</h3>
+            <p>ابدأ بإضافة أول أنمي لك!</p>
+        </div>
+    </div>
+
+    <!-- نافذة عرض الصور -->
+    <div id="imageModal" class="image-modal">
+        <div class="image-modal-content">
+            <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <div id="modalImageTitle" class="image-modal-title"></div>
+        </div>
+    </div>
+
+    <!-- نافذة تصفح الأنميات -->
+    <div id="browseAnimesModal" class="modal">
+        <div class="modal-content browse-modal-content">
+            <span class="close" onclick="closeBrowseModal()">&times;</span>
+            <h2><i class="fas fa-list"></i> تصفح الأنميات المحفوظة</h2>
+            
+            <div class="browse-search">
+                <input type="text" id="browseSearch" placeholder="البحث في الأنميات...">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <div class="browse-filters">
+                <select id="browseStatusFilter">
+                    <option value="">جميع الحالات</option>
+                    <option value="watching">أشاهدها حالياً</option>
+                    <option value="completed">مكتمل</option>
+                    <option value="plan-to-watch">سأكملها لاحقاً</option>
+                    <option value="ongoing">مستمر</option>
+                    <option value="not-aired">لم يتم بثه بعد</option>
+                </select>
+                
+                <select id="browseTypeFilter">
+                    <option value="">جميع الأنواع</option>
+                    <option value="tv">مسلسل</option>
+                    <option value="movie">فلم</option>
+                    <option value="ova">OVA</option>
+                    <option value="ona">ONA</option>
+                    <option value="special">خاصة</option>
+                </select>
+            </div>
+            
+            <div id="browseAnimesList" class="browse-animes-list">
+                <!-- سيتم ملء القائمة بواسطة JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة استيراد MyAnimeList -->
+    <div id="malImportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMalImportModal()">&times;</span>
+            <h2><i class="fas fa-external-link-alt"></i> استيراد من MyAnimeList</h2>
+            
+            <div class="mal-import-content">
+                <div class="mal-instructions">
+                    <h3><i class="fas fa-info-circle"></i> كيفية الاستيراد:</h3>
+                    <ol>
+                        <li>اذهب إلى <a href="https://myanimelist.net/panel.php?go=export" target="_blank" rel="noopener">صفحة التصدير في MAL</a></li>
+                        <li>اضغط على "Export My List"</li>
+                        <li>حمل ملف XML الذي سيتم إنشاؤه</li>
+                        <li>ارفع الملف هنا باستخدام الزر أدناه</li>
+                    </ol>
+                </div>
+                
+                <div class="mal-upload-area">
+                    <div class="upload-zone" id="malUploadZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>اسحب ملف MAL XML هنا</h3>
+                        <p>أو اضغط لاختيار الملف</p>
+                        <input type="file" id="malFileInput" accept=".xml" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="mal-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="malMergeData" checked>
+                        <span class="checkmark"></span>
+                        دمج مع البيانات الموجودة (بدلاً من الاستبدال)
+                    </label>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="malImportImages" checked>
+                        <span class="checkmark"></span>
+                        محاولة جلب صور الأنميات تلقائياً
+                    </label>
+                </div>
+                
+                <div class="mal-progress" id="malProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="malProgressFill"></div>
+                    </div>
+                    <p id="malProgressText">جاري المعالجة...</p>
+                </div>
+                
+                <div class="mal-buttons">
+                    <button id="malStartImport" class="btn-primary" disabled>
+                        <i class="fas fa-download"></i> بدء الاستيراد
+                    </button>
+                    <button onclick="closeMalImportModal()" class="btn-secondary">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تحذير التكرار -->
+    <div id="duplicateWarningModal" class="modal">
+        <div class="modal-content duplicate-warning-content">
+            <span class="close" onclick="closeDuplicateWarning()">&times;</span>
+            <div class="duplicate-warning-header">
+                <i class="fas fa-exclamation-triangle warning-icon"></i>
+                <h2>تحذير: أنمي مكرر!</h2>
+            </div>
+            
+            <div class="duplicate-warning-body">
+                <div class="duplicate-exact-match" id="duplicateExactMatch" style="display: none;">
+                    <div class="warning-message">
+                        <p><strong>يوجد أنمي بنفس الاسم بالضبط في قائمتك!</strong></p>
+                        <div class="existing-anime-info" id="existingAnimeInfo">
+                            <!-- سيتم ملؤها بواسطة JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="duplicate-similar-matches" id="duplicateSimilarMatches" style="display: none;">
+                    <div class="warning-message">
+                        <p><strong>وُجدت أنميات مشابهة في قائمتك:</strong></p>
+                        <div class="similar-animes-list" id="similarAnimesList">
+                            <!-- سيتم ملؤها بواسطة JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="new-anime-info">
+                    <h4>الأنمي الذي تريد إضافته:</h4>
+                    <div class="new-anime-preview" id="newAnimePreview">
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="duplicate-warning-actions">
+                <button id="proceedWithAdd" class="btn-proceed" onclick="proceedWithAnimeAdd()">
+                    <i class="fas fa-plus"></i> إضافة على أي حال
+                </button>
+                <button id="editAnimeData" class="btn-edit" onclick="editAnimeData()">
+                    <i class="fas fa-edit"></i> تعديل البيانات
+                </button>
+                <button onclick="closeDuplicateWarning()" class="btn-cancel">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
